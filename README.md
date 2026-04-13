@@ -130,6 +130,67 @@ Career-ops is a single slash command with multiple modes:
 
 Or just paste a job URL or description directly -- career-ops auto-detects it and runs the full pipeline.
 
+## Auto-Apply Agent
+
+A fully automated pipeline that scans, evaluates, and applies to jobs on your behalf.
+
+```
+scan.mjs (zero cost) → claude -p (A-G eval) → apply-browser.mjs (Playwright) → daily report
+```
+
+### On-demand usage
+
+```bash
+# Full pipeline: scan portals → evaluate → apply to 4.0+ matches → report
+bash daily-agent.sh
+
+# Preview without submitting anything
+bash daily-agent.sh --dry-run
+
+# Only apply to already-evaluated offers above threshold
+bash daily-agent.sh --apply-only
+
+# Scan only (no evaluation or apply)
+bash daily-agent.sh --scan-only
+
+# Customize threshold and max applications per run
+bash daily-agent.sh --threshold 3.5 --max-apply 10
+
+# Run evaluation with more parallel workers
+bash daily-agent.sh --parallel 3
+```
+
+### Optional: schedule with cron
+
+```bash
+bash setup-cron.sh            # install (default: every 5 hours)
+bash setup-cron.sh --status   # check what's scheduled
+bash setup-cron.sh --remove   # remove all career-ops cron jobs
+```
+
+### Apply to a single job via browser automation
+
+```bash
+# Dry run (fills form, takes screenshot, doesn't submit)
+node apply-browser.mjs --url "https://job-boards.greenhouse.io/company/jobs/123" --dry-run
+
+# Apply with a tailored resume
+node apply-browser.mjs --url "https://job-boards.greenhouse.io/company/jobs/123" --resume output/cv-tailored.pdf
+
+# Batch apply from a JSON file
+node apply-browser.mjs --batch applications.json
+```
+
+Supports **Greenhouse**, **Lever**, and **Ashby** ATS platforms. Screenshots are saved to `logs/screenshots/` for verification.
+
+### Results
+
+After each run, the agent produces:
+- **Daily report** in `reports/daily-reports/{date}-results.md`
+- **Updated tracker** in `data/applications.md`
+- **Screenshots** of each submitted form in `logs/screenshots/`
+- **Logs** in `logs/daily-agent.log`
+
 ## How It Works
 
 ```
